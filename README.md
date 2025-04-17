@@ -3,443 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToolHub Pro - All-in-One Online Tools</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <title>ToolHub Pro - Multi-Tool Suite</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary-color: #f59e0b;
-            --light-bg: #f3f4f6;
-            --dark-bg: #1f2937;
-            --light-text: #f9fafb;
-            --dark-text: #111827;
-            --light-card: #ffffff;
-            --dark-card: #374151;
-            --border-light: #e5e7eb;
-            --border-dark: #4b5563;
+            --secondary-color: #f43f5e;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --bg-tertiary: #e5e7eb;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --highlight-color: #f0fdf4;
         }
-
+        
+        [data-theme="dark"] {
+            --primary-color: #6366f1;
+            --secondary-color: #f87171;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --highlight-color: #064e3b;
+        }
+        
         body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
         }
 
-        body[data-theme="light"] {
-            background-color: var(--light-bg);
-            color: var(--dark-text);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-secondary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
         }
 
-        body[data-theme="dark"] {
-            background-color: var(--dark-bg);
-            color: var(--light-text);
-        }
-
-        /* Card styles */
-        .tool-card {
-            border-radius: 0.75rem;
+        /* Calculator Specific Styles */
+        .calculator {
+            background-color: var(--bg-primary);
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            max-width: 360px;
+            margin: 0 auto;
+        }
+        
+        .calculator-display {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            text-align: right;
+            font-size: 2.2rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-height: 5rem;
+            position: relative;
+        }
+        
+        .calculator-history {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .calculator-keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            padding: 2px;
+        }
+        
+        .calculator-key {
+            border: none;
+            font-size: 1.25rem;
+            padding: 1rem 0;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .calculator-key:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calculator-key:active,
+        .calculator-key.active {
+            transform: scale(0.95);
+            background-color: var(--secondary-color);
+        }
+        
+        .key-operator {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .key-equal {
+            background-color: var(--secondary-color);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .key-memory {
+            background-color: var(--bg-tertiary);
+            font-size: 1.1rem;
         }
 
-        body[data-theme="light"] .tool-card {
-            background-color: var(--light-card);
-            border: 1px solid var(--border-light);
-        }
-
-        body[data-theme="dark"] .tool-card {
-            background-color: var(--dark-card);
-            border: 1px solid var(--border-dark);
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Tool section */
+        /* Tool Section Styling */
         .tool-section {
-            display: none;
+            background-color: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        
+        .tool-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px var(--shadow-color);
+        }
+        
+        .sidebar {
+            background-color: var(--bg-primary);
+            border-right: 1px solid var(--bg-tertiary);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            overflow-y: auto;
+            transition: transform 0.3s;
+            z-index: 50;
+        }
+        
+        .logo-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .pro-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-left: 0.25rem;
+            vertical-align: middle;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--bg-secondary);
+            border-left-color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            background-color: var(--bg-tertiary);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-link i {
+            width: 1.5rem;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
         }
 
-        .tool-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .mobile-menu-toggle {
+                display: block !important;
+            }
         }
 
+        /* Animation Effects */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Custom switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 24px;
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
         }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--primary-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        /* Custom inputs */
-        .tool-input, .tool-button {
-            transition: all 0.3s;
-        }
-
-        body[data-theme="light"] .tool-input {
-            background-color: #f9fafb;
-            border: 1px solid var(--border-light);
-            color: var(--dark-text);
-        }
-
-        body[data-theme="dark"] .tool-input {
-            background-color: #1f2937;
-            border: 1px solid var(--border-dark);
-            color: var(--light-text);
-        }
-
-        .tool-input:focus {
-            border-color: var(--primary-color);
+        
+        /* Input and Button Styling */
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--bg-tertiary);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            transition: border-color 0.3s;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-
-        .result-container {
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            padding: 1rem;
-            overflow-wrap: break-word;
-        }
-
-        body[data-theme="light"] .result-container {
-            background-color: #f3f4f6;
-            border: 1px solid var(--border-light);
-        }
-
-        body[data-theme="dark"] .result-container {
-            background-color: #374151;
-            border: 1px solid var(--border-dark);
-        }
-
-        /* Password strength */
-        .strength-meter {
-            height: 4px;
-            border-radius: 2px;
-            margin-top: 0.5rem;
-            background-color: #e5e7eb;
-            overflow: hidden;
-        }
-
-        .strength-fill {
-            height: 100%;
-            width: 0;
-            transition: width 0.3s, background-color 0.3s;
         }
         
-        .nav-link {
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
             transition: all 0.3s;
-            border-radius: 0.5rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
         }
         
-        .nav-link:hover {
-            background-color: rgba(79, 70, 229, 0.1);
-        }
-        
-        .nav-link.active {
+        .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
-
-        .color-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 0.5rem;
-            margin: 1rem auto;
-            border: 1px solid var(--border-light);
+        
+        .btn-primary:hover {
+            background-color: #4338ca;
         }
-
-        #qrcode img {
-            margin: 0 auto;
-            max-width: 100%;
-            height: auto;
+        
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* For sticky headers */
+        .tool-header {
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--bg-tertiary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
     </style>
 </head>
 <body data-theme="light">
-    <div class="flex flex-col lg:flex-row min-h-screen">
-        <!-- Sidebar -->
-        <div class="lg:w-64 bg-gray-800 text-white p-4">
-            <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center">
-                    <i class="fas fa-toolbox text-2xl mr-2 text-yellow-400"></i>
-                    <h1 class="text-xl font-bold">ToolHub Pro</h1>
-                </div>
-                <button id="theme-toggle" class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 focus:outline-none">
-                    <i class="fas fa-moon"></i>
-                </button>
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-menu-toggle" class="fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md hidden">
+        <i class="fas fa-bars text-gray-700"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="p-4 flex justify-between items-center border-b border-gray-200">
+            <div class="flex items-center">
+                <span class="logo-icon">🧰</span>
+                <h1 class="text-xl font-bold">ToolHub<span class="pro-badge">Pro</span></h1>
             </div>
-            
-            <div class="mb-4">
-                <div class="relative">
-                    <input type="text" id="tool-search" placeholder="Search tools..." class="w-full bg-gray-700 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute right-3 top-2.5 text-gray-400"></i>
-                </div>
-            </div>
-            
-            <nav class="space-y-1">
-                <a href="#password-generator" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-key mr-3"></i>
-                    <span>Password Generator</span>
-                </a>
-                <a href="#case-converter" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-font mr-3"></i>
-                    <span>Text Case Converter</span>
-                </a>
-                <a href="#word-counter" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-calculator mr-3"></i>
-                    <span>Word Counter</span>
-                </a>
-                <a href="#color-picker" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-palette mr-3"></i>
-                    <span>Color Picker</span>
-                </a>
-                <a href="#base64-tool" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-exchange-alt mr-3"></i>
-                    <span>Base64 Encoder/Decoder</span>
-                </a>
-                <a href="#url-encoder" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-link mr-3"></i>
-                    <span>URL Encoder/Decoder</span>
-                </a>
-                <a href="#json-formatter" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-code mr-3"></i>
-                    <span>JSON Formatter</span>
-                </a>
-                <a href="#qr-generator" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-qrcode mr-3"></i>
-                    <span>QR Code Generator</span>
-                </a>
-                <a href="#lorem-ipsum" class="nav-link flex items-center px-4 py-2 text-sm font-medium">
-                    <i class="fas fa-align-left mr-3"></i>
-                    <span>Lorem Ipsum Generator</span>
-                </a>
-            </nav>
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
         
-        <!-- Main Content -->
-        <div class="flex-1 p-4 lg:p-8">
-            <h1 class="text-3xl font-bold mb-6 text-center lg:text-left">Your Ultimate Online Toolbox</h1>
-            
-            <!-- Password Generator -->
-            <div id="password-generator" class="tool-section active">
-                <div class="tool-card p-6">
-                    <h2 class="text-xl font-bold mb-2 flex items-center">
-                        <i class="fas fa-key mr-2 text-indigo-500"></i>
-                        Password Generator
-                    </h2>
-                    <p class="text-gray-500 dark:text-gray-400 mb-4">Create strong, secure passwords instantly</p>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block mb-2 text-sm font-medium">Password Length: <span id="length-value">12</span></label>
-                            <input type="range" id="pass-length" min="8" max="32" value="12" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="flex items-center">
-                                <label class="switch mr-3">
-                                    <input type="checkbox" id="uppercase" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span>Uppercase Letters</span>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <label class="switch mr-3">
-                                    <input type="checkbox" id="lowercase" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span>Lowercase Letters</span>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <label class="switch mr-3">
-                                    <input type="checkbox" id="numbers" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span>Numbers</span>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <label class="switch mr-3">
-                                    <input type="checkbox" id="symbols" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span>Special Characters</span>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block mb-2 text-sm font-medium">Password Strength:</label>
-                            <div class="strength-meter">
-                                <div class="strength-fill" id="strength-fill"></div>
-                            </div>
-                            <p id="strength-text" class="text-sm mt-1">Medium</p>
-                        </div>
-                        
-                        <div class="flex space-x-4">
-                            <button id="generate-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Generate Password
-                            </button>
-                            <button id="copy-password" class="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                <i class="far fa-copy mr-2"></i>Copy
-                            </button>
-                        </div>
-                        
-                        <div class="result-container">
-                            <div id="password-result" class="font-mono text-lg"></div>
-                        </div>
-                    </div>
-                </div>
+        <div class="p-3">
+            <input type="text" id="tool-search" placeholder="Search tools..." class="w-full p-2 rounded bg-gray-100 text-gray-800">
+        </div>
+        
+        <nav class="tool-nav">
+            <a href="#calculator" data-tool="calculator" class="nav-link active">
+                <i class="fas fa-calculator"></i> Calculator
+            </a>
+            <a href="#password-generator" data-tool="password-generator" class="nav-link">
+                <i class="fas fa-key"></i> Password Generator
+            </a>
+            <a href="#text-case-converter" data-tool="text-case-converter" class="nav-link">
+                <i class="fas fa-font"></i> Text Case Converter
+            </a>
+            <a href="#word-counter" data-tool="word-counter" class="nav-link">
+                <i class="fas fa-calculator"></i> Word Counter
+            </a>
+            <a href="#color-picker" data-tool="color-picker" class="nav-link">
+                <i class="fas fa-palette"></i> Color Picker
+            </a>
+            <a href="#base64-converter" data-tool="base64-converter" class="nav-link">
+                <i class="fas fa-exchange-alt"></i> Base64 Converter
+            </a>
+            <a href="#url-encoder" data-tool="url-encoder" class="nav-link">
+                <i class="fas fa-link"></i> URL Encoder/Decoder
+            </a>
+            <a href="#json-formatter" data-tool="json-formatter" class="nav-link">
+                <i class="fas fa-code"></i> JSON Formatter
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content ml-0 md:ml-64 transition-all duration-300 p-4 md:p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center mb-2">ToolHub Pro</h1>
+            <p class="text-center text-gray-600">Your Ultimate Online Toolbox</p>
+        </header>
+
+        <!-- Calculator Tool -->
+        <div id="calculator" class="tool-section fade-in">
+            <div class="tool-header p-4">
+                <h2 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-calculator mr-2 text-indigo-600"></i> 
+                    Calculator
+                </h2>
+                <p class="text-gray-600 text-sm">Perform mathematical calculations with keyboard support</p>
             </div>
             
-            <!-- Text Case Converter -->
-            <div id="case-converter" class="tool-section">
-                <div class="tool-card p-6">
-                    <h2 class="text-xl font-bold mb-2 flex items-center">
-                        <i class="fas fa-font mr-2 text-indigo-500"></i>
-                        Text Case Converter
-                    </h2>
-                    <p class="text-gray-500 dark:text-gray-400 mb-4">Convert text between different letter cases</p>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block mb-2 text-sm font-medium">Enter your text:</label>
-                            <textarea id="case-input" rows="5" class="tool-input w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" placeholder="Type or paste your text here..."></textarea>
-                        </div>
+            <div class="p-4">
+                <div class="calculator">
+                    <div class="calculator-display" id="calculator-display">
+                        <div class="calculator-history" id="calculator-history"></div>
+                        <div id="calculator-current">0</div>
+                    </div>
+                    <div class="calculator-keys">
+                        <button class="calculator-key key-memory" data-action="memory-clear">MC</button>
+                        <button class="calculator-key key-memory" data-action="memory-recall">MR</button>
+                        <button class="calculator-key key-memory" data-action="memory-add">M+</button>
+                        <button class="calculator-key key-memory" data-action="memory-subtract">M-</button>
                         
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="convertCase('upper')" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                UPPERCASE
-                            </button>
-                            <button onclick="convertCase('lower')" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                lowercase
-                            </button>
-                            <button onclick="convertCase('title')" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Title Case
-                            </button>
-                            <button onclick="convertCase('sentence')" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Sentence case
-                            </button>
-                            <button onclick="convertCase('alternating')" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                aLtErNaTiNg CaSe
-                            </button>
-                            <button id="copy-case" class="px-4 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                <i class="far fa-copy mr-2"></i>Copy
-                            </button>
-                        </div>
+                        <button class="calculator-key" data-action="clear">C</button>
+                        <button class="calculator-key" data-action="negate">±</button>
+                        <button class="calculator-key" data-action="percentage">%</button>
+                        <button class="calculator-key key-operator" data-action="divide">÷</button>
                         
-                        <div class="result-container">
-                            <div id="case-output" class="whitespace-pre-wrap"></div>
-                        </div>
+                        <button class="calculator-key" data-digit="7">7</button>
+                        <button class="calculator-key" data-digit="8">8</button>
+                        <button class="calculator-key" data-digit="9">9</button>
+                        <button class="calculator-key key-operator" data-action="multiply">×</button>
+                        
+                        <button class="calculator-key" data-digit="4">4</button>
+                        <button class="calculator-key" data-digit="5">5</button>
+                        <button class="calculator-key" data-digit="6">6</button>
+                        <button class="calculator-key key-operator" data-action="subtract">−</button>
+                        
+                        <button class="calculator-key" data-digit="1">1</button>
+                        <button class="calculator-key" data-digit="2">2</button>
+                        <button class="calculator-key" data-digit="3">3</button>
+                        <button class="calculator-key key-operator" data-action="add">+</button>
+                        
+                        <button class="calculator-key" data-digit="0">0</button>
+                        <button class="calculator-key" data-digit=".">.</button>
+                        <button class="calculator-key key-equal" data-action="calculate">=</button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Word Counter -->
-            <div id="word-counter" class="tool-section">
-                <div class="tool-card p-6">
-                    <h2 class="text-xl font-bold mb-2 flex items-center">
-                        <i class="fas fa-calculator mr-2 text-indigo-500"></i>
-                        Word Counter
-                    </h2>
-                    <p class="text-gray-500 dark:text-gray-400 mb-4">Count words, characters, and more in your text</p>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block mb-2 text-sm font-medium">Enter your text:</label>
-                            <textarea id="word-input" rows="8" class="tool-input w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" placeholder="Type or paste your text here..."></textarea>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-lg text-center">
-                                <h3 class="text-lg font-semibold text-indigo-800 dark:text-indigo-200">Words</h3>
-                                <p id="word-count" class="text-2xl font-bold text-indigo-600 dark:text-indigo-300">0</p>
-                            </div>
-                            
-                            <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-lg text-center">
-                                <h3 class="text-lg font-semibold text-indigo-800 dark:text-indigo-200">Characters</h3>
-                                <p id="char-count" class="text-2xl font-bold text-indigo-600 dark:text-indigo-300">0</p>
-                            </div>
-                            
-                            <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-lg text-center">
-                                <h3 class="text-lg font-semibold text-indigo-800 dark:text-indigo-200">Sentences</h3>
-                                <p id="sentence-count" class="text-2xl font-bold text-indigo-600 dark:text-indigo-300">0</p>
-                            </div>
-                            
-                            <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-lg text-center">
-                                <h3 class="text-lg font-semibold text-indigo-800 dark:text-indigo-200">Paragraphs</h3>
-                                <p id="paragraph-count" class="text-2xl font-bold text-indigo-600 dark:text-indigo-300">0</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                            <h3 class="text-lg font-semibold mb-2">Reading Time</h3>
-                            <div class="flex items-center">
-                                <i class="far fa-clock text-indigo-500 text-2xl mr-3"></i>
-                                <div>
-                                    <p id="reading-time" class="text-xl font-medium">About 0 minutes</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Based on average reading speed (200 words per minute)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mt-4 text-gray-600 text-sm">
+                    <p><strong>Keyboard shortcuts:</strong></p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Numbers 0-9 for digits</li>
+                        <li>+, -, *, / for operations</li>
+                        <li>Enter or = for equals</li>
+                        <li>Escape or C for clear</li>
+                        <li>Backspace to delete last character</li>
+                    </ul>
                 </div>
             </div>
+        </div>
+
+        <!-- Password Generator Tool -->
+        <div id="password-generator" class="tool-section fade-in hidden">
+            <div class="tool-header p-4">
+                <h2 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-key mr-2 text-indigo-600"></i> 
+                    Password Generator
+                </h2>
+                <p class="text-gray-600 text-sm">Generate secure, random passwords</p>
+            </div>
             
-            <!-- Color Picker -->
-            <div id="color-picker" class="tool-section">
-                <div class="tool-card p-6">
-             
+            <div class="p-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Password Length: <span id="length-value">16</span></label>
+                    <div class="flex items-center">
+                        <input type="range" id="password-length" min="8" max="64" value="16" 
+                               class="w-3/4 mr-4">
+                        <input type="number" id="password-length-input" min="8" max="64" value="16" 
+                               class="w-1/4 p-2 border rounded">
+                    </div>
+                </div>
+                
+                <div class="mb-4 grid grid-cols-2 gap-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include-uppercase" checked class="mr-2">
+                        <label for="include-uppercase">Uppercase Letters</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include-lowercase" checked class="mr-2">
+                        <label for="include-lowercase">Lowercase Letters</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include-numbers" checked class="mr-2">
+                        <label for="include-numbers">Numbers</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="include-symbols" checked class="mr-2">
+                        <label for="include-symbols">Special Characters</label>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Password Strength</label>
+                    <div class="bg-gray-200 rounded-full h-4">
+                        <div id="password-strength" class="bg-red-500 h-4 rounded-full" style="width: 0%;"></div>
+                    </div>
+                    <p class="text-sm mt-1 text-gray-600" id="strength-text">Generate a password</p>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex">
+                        <input type="text" id="password-output" readonly 
+                               class="flex-grow p-2 border rounded-l font-mono" 
+                               placeholder="Your generated password">
+                        <button id="copy-password" class="bg-indigo-600 text-white px-4 rounded-r">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="generate-password" class="btn btn-primary w-full">
+                    <i class="fas fa-sync-alt"></i> Generate Password
+                </button>
+            </div>
+        </div>
+
+        <!-- Text Case Converter Tool -->
+        <div id="text-case-converter" class="tool-section fade-in hidden">
+            <div class="tool-header p-4">
+                <h2 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-font mr-2 text-indigo-600"></i> 
+                    Text Case Converter
+                </h2>
+                <p class="text-gray-600 text-sm">Convert text to different cases</p>
+            </div>
+            
+            <div class="p-4">
+                <div class="mb-4">
+                    <label for="case-input" class="block mb-2">Input Text</label>
+                    <textarea id="case-input" rows="6" class="w-full p-2 border rounded" 
+                              placeholder="Enter your text here..."></textarea>
+                </div>
+                
+                <div class="mb-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <button class="btn btn-secondary" data-case="upper">UPPERCASE</button>
+                    <button class="btn btn-secondary" data-case="lower">lowercase</button>
+                    <button class="btn btn-secondary" data-case="title">Title Case</button>
+                    <button class="btn btn-secondary" data-case="sentence">Sentence case</button>
+                    <button class="btn btn-secondary" data-case="camel">camelCase</button>
+                    <button class="btn btn-secondary" data-case="pasca
